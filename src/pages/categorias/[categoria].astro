@@ -1,0 +1,77 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import products from '../../data/products.json';
+import { rankProducts } from '../../utils/curation.js';
+
+function slugify(value) {
+  return value.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+export function getStaticPaths() {
+  const categories = [...new Set(
+    products
+      .filter(p => p.status === 'published' && p.affiliateUrl)
+      .map(p => p.category)
+      .filter(Boolean)
+  )];
+
+  return categories.map(category => ({
+    params: { categoria: slugify(category) },
+    props: { category }
+  }));
+}
+
+const { category } = Astro.props;
+
+const categoryProducts = rankProducts(products)
+  .filter(p => slugify(p.category) === slugify(category));
+---
+
+<Layout title={`${category} | MALLORA`}>
+  <main class="category-page">
+    <a href="/categorias" class="back">← Todas as categorias</a>
+
+    <span class="kicker">MALLORA • CURADORIA</span>
+    <h1>{category}</h1>
+    <p>Descobertas selecionadas para você.</p>
+
+    <section class="products">
+      {categoryProducts.length ? categoryProducts.map(product => (
+        <article class="product">
+          {product.image && <img src={product.image} alt={product.name}/>}
+          <div>
+            <small>{product.store || 'MALLORA SELECTION'}</small>
+            <h2><a href={`/produto/${product.slug || product.id}`}>{product.name}</a></h2>
+            <p>{product.description}</p>
+            {product.price && <strong>R$ {Number(product.price).toFixed(2).replace('.', ',')}</strong>}
+            <a href={product.affiliateUrl} target="_blank" rel="nofollow sponsored noopener">Ver produto ↗</a>
+          </div>
+        </article>
+      )) : <p class="empty">Novas descobertas em breve.</p>}
+    </section>
+  </main>
+</Layout>
+
+<style>
+.category-page { min-height:70vh; padding:70px 8%; background:#0b1220; color:#f5f6fa; }
+.back { display:block; margin-bottom:35px; color:#d7b56d; text-decoration:none; }
+.kicker { color:#d7b56d; font-size:10px; letter-spacing:3px; }
+h1 { font-size:clamp(32px,5vw,55px); margin:18px 0; }
+.category-page>p { color:#9ba6b8; }
+.products { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:40px; }
+.product { background:#111c2d; border:1px solid #263247; }
+.product img { width:100%; height:220px; object-fit:contain; padding:20px; }
+.product div { padding:22px; }
+.product small { color:#d7b56d; }
+.product h2 { font-size:18px; }
+.product p { color:#9ba6b8; font-size:13px; }
+.product strong { display:block; margin:12px 0; }
+.product a { color:#d7b56d; }
+.empty { color:#9ba6b8; }
+@media(max-width:750px) { .products { grid-template-columns:1fr; } .category-page { padding:55px 6%; } }
+</style>

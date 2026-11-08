@@ -1,0 +1,26 @@
+
+---
+const { product } = Astro.props;
+const slug = product.slug || product.id;
+---
+<article class="mallora-card" data-product={product.name} data-category={product.category}>
+  <a href={`/produto/${slug}`} class="mallora-card-image">
+    {product.image ? <img src={product.image} alt={product.name} loading="lazy"/> : <span>M</span>}
+  </a>
+  <div class="mallora-card-info">
+    <small>{product.store || product.category || 'MALLORA SELECTION'}</small>
+    <h3><a href={`/produto/${slug}`}>{product.name}</a></h3>
+    <p>{product.description}</p>
+    {product.price != null && <strong>R$ {Number(product.price).toFixed(2).replace('.',',')}</strong>}
+    {product.affiliateUrl && <a class="mallora-card-buy" href={product.affiliateUrl} target="_blank" rel="nofollow sponsored noopener">Ver oferta ↗</a>}
+  </div>
+</article>
+<style>
+.mallora-card{background:#111c2d;border:1px solid #263247;color:#f5f6fa;overflow:hidden}
+.mallora-card-image{height:220px;display:grid;place-items:center;color:#d7b56d}
+.mallora-card-image img{width:100%;height:100%;object-fit:contain;padding:20px}
+.mallora-card-info{padding:20px}.mallora-card-info small{color:#d7b56d}
+.mallora-card-info p{color:#9ba6b8;line-height:1.6;font-size:13px}
+.mallora-card-info strong{display:block;margin:12px 0;font-size:20px}
+.mallora-card-buy{display:inline-block;color:#d7b56d;margin-top:12px}
+</style>

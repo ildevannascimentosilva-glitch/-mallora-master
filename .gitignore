@@ -26,3 +26,16 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Mallora - arquivos locais e privados
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.pyc
+backup_mallora/
+backups/
+MALLORA_TEMP_BACKUP.tar.gz

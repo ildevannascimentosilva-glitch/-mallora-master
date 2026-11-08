@@ -1,0 +1,21 @@
+[
+  {
+    "id": "mallora-001",
+    "name": "Produto demonstrativo",
+    "slug": "produto-demonstrativo",
+    "category": "Tecnologia",
+    "description": "Espaço reservado para uma descoberta selecionada pela MALLORA.",
+    "price": null,
+    "oldPrice": null,
+    "image": "",
+    "store": "",
+    "affiliateUrl": "",
+    "featured": false,
+    "rating": null,
+    "commissionRate": null,
+    "curationScore": 0,
+    "status": "draft",
+    "createdAt": "2026-11-08",
+    "updatedAt": "2026-11-08"
+  }
+]

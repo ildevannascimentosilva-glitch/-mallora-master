@@ -1,0 +1,87 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import products from '../../data/products.json';
+import { productSEO } from '../../utils/mallora-seo.js';
+
+function slugify(value) {
+  return value.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+export function getStaticPaths() {
+  return products
+    .filter(p => p.status === 'published' && p.affiliateUrl)
+    .map(product => ({
+      params: { slug: product.slug || slugify(product.name) },
+      props: { product }
+    }));
+}
+
+const { product } = Astro.props;
+const seo = productSEO(product);
+
+const discount = product.oldPrice && product.price &&
+  Number(product.oldPrice) > Number(product.price)
+  ? Math.round((1 - Number(product.price) / Number(product.oldPrice)) * 100)
+  : null;
+---
+
+<Layout title={seo.title} description={seo.description} canonical={seo.canonical} image={seo.image}>
+  <main class="product-page">
+    <a href="/" class="back">← Voltar à MALLORA</a>
+
+    <article class="detail">
+      <div class="image">
+        {product.image
+          ? <img src={product.image} alt={product.name}/>
+          : <span>M</span>}
+        {discount && <small>{discount}% OFF</small>}
+      </div>
+
+      <div class="content">
+        <span class="kicker">{product.store || 'MALLORA SELECTION'}</span>
+        <h1>{product.name}</h1>
+        <p class="description">{product.description}</p>
+
+        {product.oldPrice && discount && (
+          <del>R$ {Number(product.oldPrice).toFixed(2).replace('.', ',')}</del>
+        )}
+
+        {product.price && (
+          <strong>R$ {Number(product.price).toFixed(2).replace('.', ',')}</strong>
+        )}
+
+        <a class="buy" href={product.affiliateUrl}
+          target="_blank" rel="nofollow sponsored noopener">
+          Conferir na loja ↗
+        </a>
+
+        <p class="disclosure">
+          Este link pode gerar comissão para a MALLORA, sem custo adicional para você.
+          Preços e disponibilidade podem mudar na loja.
+        </p>
+      </div>
+    </article>
+  </main>
+</Layout>
+
+<style>
+.product-page { min-height:70vh; padding:70px 8%; background:#0b1220; color:#f5f6fa; }
+.back { display:block; margin-bottom:35px; color:#d7b56d; text-decoration:none; }
+.detail { display:grid; grid-template-columns:1fr 1fr; gap:45px; align-items:center; max-width:1100px; margin:auto; }
+.image { min-height:400px; position:relative; display:grid; place-items:center; background:#111c2d; border:1px solid #263247; color:#d7b56d; font:90px Georgia,serif; }
+.image img { width:100%; height:400px; object-fit:contain; padding:30px; }
+.image small { position:absolute; top:18px; left:18px; background:#d7b56d; color:#0b1220; padding:8px 12px; font:12px system-ui; }
+.kicker { color:#d7b56d; letter-spacing:3px; font-size:11px; }
+.content h1 { font-size:clamp(30px,4vw,48px); line-height:1.15; }
+.description { color:#9ba6b8; line-height:1.8; }
+.content del { display:block; color:#748096; margin-top:20px; }
+.content strong { display:block; font-size:30px; margin:10px 0 25px; }
+.buy { display:inline-block; background:#d7b56d; color:#0b1220; padding:16px 28px; text-decoration:none; font-weight:bold; }
+.disclosure { margin-top:25px; color:#748096; font-size:12px; line-height:1.7; }
+@media(max-width:750px) { .detail { grid-template-columns:1fr; gap:25px; } .image,.image img { height:300px; min-height:300px; } .product-page { padding:50px 6%; } }
+</style>

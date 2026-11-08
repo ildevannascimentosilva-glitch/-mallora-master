@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import products from "../data/products.json";
+import { filterProducts } from "../utils/mallora-search.js";
+import { rankProducts } from "../utils/curation.js";
+import MalloraProductCard from "../components/MalloraProductCard.astro";
+
+const q = Astro.url.searchParams.get("q") || "";
+const results = rankProducts(filterProducts(products, { q }));
+---
+<Layout title={`Busca: ${q || "Produtos"} | MALLORA`}
+ description="Encontre produtos e ofertas na MALLORA.">
+<main style="max-width:1200px;margin:auto;padding:40px 20px">
+  <h1>Resultados da busca</h1>
+  <p>{results.length} produto(s) encontrado(s) para “{q}”.</p>
+  <form action="/buscar" method="GET" style="display:flex;gap:10px;margin:20px 0">
+    <input name="q" value={q} placeholder="Buscar..." style="padding:12px;flex:1;border-radius:10px"/>
+    <button style="padding:12px 20px">Buscar</button>
+  </form>
+  {results.length ? (
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px">
+      {results.map(product => <MalloraProductCard product={product}/>)}
+    </div>
+  ) : <p>Nenhum produto publicado corresponde à busca. Volte em breve!</p>}
+</main>
+</Layout>

@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+import products from '../data/products.json';
+
+const published = products.filter(p => p.status === "published" && p.affiliateUrl);
+const categories = [...new Set(published.map(p => p.category).filter(Boolean))];
+---
+
+<Layout title="Categorias | MALLORA">
+  <main class="mallora-categories">
+    <header>
+      <span>MALLORA CURADORIA</span>
+      <h1>Explore por categoria.</h1>
+      <p>Descubra produtos selecionados com inteligência.</p>
+    </header>
+
+    <section class="category-grid">
+      {categories.length > 0 ? categories.map(category => (
+        <a href={`/categorias/${encodeURIComponent(category.toLowerCase())}`} class="category-card">
+          <span> M </span>
+          <h2>{category}</h2>
+          <p>Explorar seleção ↗</p>
+        </a>
+      )) : (
+        <div class="empty">
+          <h2>Novas categorias em breve.</h2>
+          <p>Estamos preparando descobertas para você.</p>
+        </div>
+      )}
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .mallora-categories { min-height:70vh; padding:80px 8%; background:#0b1220; color:#f5f6fa; }
+  header span { color:#d7b56d; font-size:10px; letter-spacing:3px; }
+  header h1 { font-size:clamp(30px,5vw,54px); margin:18px 0; }
+  header p { color:#9ba6b8; }
+  .category-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:45px; }
+  .category-card { padding:35px; background:#111c2d; border:1px solid #263247; text-decoration:none; color:#f5f6fa; }
+  .category-card span { color:#d7b56d; font-size:35px; font-family:Georgia,serif; }
+  .category-card p { color:#d7b56d; font-size:12px; }
+  .empty { padding:35px; border:1px solid #263247; }
+  .empty p { color:#9ba6b8; }
+  @media(max-width:750px) { .category-grid { grid-template-columns:1fr; } .mallora-categories { padding:60px 6%; } }
+</style>

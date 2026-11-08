@@ -1,0 +1,45 @@
+
+---
+import Layout from '../layouts/Layout.astro';
+import products from '../data/products.json';
+import { productMetrics } from '../utils/mallora-metrics.js';
+const m=productMetrics(products);
+---
+<Layout title="Métricas | MALLORA" description="Painel de catálogo e desempenho MALLORA.">
+<main class="metrics">
+<a href="/">← MALLORA</a><span>MALLORA INTELLIGENCE</span>
+<h1>Painel de métricas</h1>
+<p>Indicadores do catálogo cadastrado.</p>
+<div class="cards">
+<div><small>Produtos</small><strong>{m.total}</strong></div>
+<div><small>Publicados</small><strong>{m.published}</strong></div>
+<div><small>Rascunhos</small><strong>{m.drafts}</strong></div>
+<div><small>Destaques</small><strong>{m.featured}</strong></div>
+<div><small>Categorias</small><strong>{m.categories}</strong></div>
+<div><small>Lojas</small><strong>{m.stores}</strong></div>
+<div><small>Dados incompletos</small><strong>{m.invalid}</strong></div>
+</div>
+<section><h2>Radar deste navegador</h2><p id="radar">Carregando...</p>
+<button id="limpar">Limpar dados locais</button></section>
+</main>
+<script>
+import {getInterests,getClicks,clearInterests} from '../utils/mallora-radar.js';
+const radar=document.querySelector('#radar');
+function render(){
+ const i=getInterests(), c=getClicks();
+ radar.textContent='Interesses: '+JSON.stringify(i)+' | Cliques locais: '+c.length;
+}
+render();
+document.querySelector('#limpar')?.addEventListener('click',()=>{clearInterests();render()});
+</script>
+<style>
+.metrics{min-height:80vh;padding:60px 8%;background:#0b1220;color:#f5f6fa}
+.metrics>a,.metrics>span{display:block;color:#d7b56d;margin-bottom:18px}
+.metrics>span{font-size:11px;letter-spacing:3px;margin-top:35px}
+.metrics h1{font-size:clamp(30px,5vw,50px)}.metrics p{color:#9ba6b8}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:35px 0}
+.cards div,.metrics section{padding:22px;background:#111c2d;border:1px solid #263247}
+.cards small{display:block;color:#9ba6b8}.cards strong{display:block;font-size:30px;color:#d7b56d}
+.metrics button{margin-top:15px;padding:12px;background:#d7b56d;border:0;color:#0b1220}
+@media(max-width:700px){.cards{grid-template-columns:repeat(2,1fr)}}
+</style>

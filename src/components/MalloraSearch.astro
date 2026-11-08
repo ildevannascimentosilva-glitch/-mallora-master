@@ -1,0 +1,14 @@
+---
+const { placeholder = "Buscar produtos, marcas e categorias..." } = Astro.props;
+---
+<form class="mallora-search" role="search" action="/buscar" method="GET">
+  <input name="q" type="search" placeholder={placeholder}
+    aria-label="Buscar produtos na MALLORA" />
+  <button type="submit">Buscar</button>
+</form>
+<style>
+.mallora-search{display:flex;gap:10px;width:100%;max-width:720px;margin:24px auto}
+.mallora-search input{flex:1;min-width:0;padding:14px 16px;border:1px solid #d9dce3;border-radius:12px;background:#fff;color:#14213d}
+.mallora-search button{padding:0 22px;border:0;border-radius:12px;background:#c9a45c;color:#101a2e;font-weight:700;cursor:pointer}
+.mallora-search input:focus{outline:2px solid #c9a45c}
+</style>

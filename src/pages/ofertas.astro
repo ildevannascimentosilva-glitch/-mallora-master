@@ -1,0 +1,66 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { rankProducts } from '../utils/curation.js';
+import { rankProductsV8 } from '../utils/mallora-intelligence.js';
+import products from '../data/products.json';
+
+const offers = rankProductsV8(rankProducts(products))
+  .filter(p => p.oldPrice && p.price && Number(p.oldPrice) > Number(p.price))
+  .sort((a,b) => ((Number(b.oldPrice)-Number(b.price))/Number(b.oldPrice)) - ((Number(a.oldPrice)-Number(a.price))/Number(a.oldPrice)));
+---
+
+<Layout title="Ofertas | MALLORA">
+  <main class="mallora-offers">
+    <header>
+      <span>MALLORA • OPORTUNIDADES</span>
+      <h1>Boas descobertas.<br/>Melhores ofertas.</h1>
+      <p>Oportunidades selecionadas para comprar com inteligência.</p>
+    </header>
+
+    <section class="offers-grid">
+      {offers.length > 0 ? offers.map(product => (
+        <article class="offer-card">
+          <div class="visual">
+            {product.image ? <img src={product.image} alt={product.name}/> : <span>M</span>}
+            <small>{Math.round((1 - Number(product.price)/Number(product.oldPrice))*100)}% OFF</small>
+          </div>
+          <div class="info">
+            <span>{product.store || "MALLORA SELECTION"}</span>
+            <h2><a href={`/produto/${product.slug || product.id}`}>{product.name}</a></h2>
+            <p>{product.description}</p>
+            <del>R$ {Number(product.oldPrice).toFixed(2).replace(".",",")}</del>
+            <strong>R$ {Number(product.price).toFixed(2).replace(".",",")}</strong>
+            <a href={product.affiliateUrl} target="_blank" rel="nofollow sponsored noopener">Ver oferta ↗</a>
+          </div>
+        </article>
+      )) : (
+        <div class="empty">
+          <h2>Estamos preparando ofertas especiais.</h2>
+          <p>Em breve, oportunidades selecionadas pela MALLORA.</p>
+        </div>
+      )}
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .mallora-offers { min-height:70vh; padding:80px 8%; background:#0b1220; color:#f5f6fa; }
+  header span { color:#d7b56d; font-size:10px; letter-spacing:3px; }
+  header h1 { font-size:clamp(30px,5vw,54px); margin:18px 0; }
+  header p { color:#9ba6b8; }
+  .offers-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:45px; }
+  .offer-card { background:#111c2d; border:1px solid #263247; }
+  .visual { height:220px; display:grid; place-items:center; position:relative; color:#d7b56d; font:65px Georgia,serif; }
+  .visual img { width:100%; height:100%; object-fit:contain; padding:25px; }
+  .visual small { position:absolute; top:15px; left:15px; background:#d7b56d; color:#0b1220; padding:7px 10px; font:10px system-ui; }
+  .info { padding:22px; }
+  .info>span { color:#d7b56d; font-size:10px; letter-spacing:2px; }
+  .info h2 { font-size:18px; }
+  .info p { color:#9ba6b8; font-size:12px; line-height:1.6; }
+  .info del { display:block; color:#748096; font-size:12px; }
+  .info strong { display:block; margin-top:7px; font-size:20px; }
+  .info a { display:inline-block; color:#d7b56d; margin-top:18px; }
+  .empty { padding:35px; border:1px solid #263247; }
+  .empty p { color:#9ba6b8; }
+  @media(max-width:750px) { .offers-grid { grid-template-columns:1fr; } .mallora-offers { padding:60px 6%; } }
+</style>
